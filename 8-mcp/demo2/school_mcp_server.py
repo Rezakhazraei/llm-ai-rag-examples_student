@@ -1,5 +1,5 @@
 # school_mcp_server.py
-# MCP Day 6 - Demo 2: School Student Records MCP Server
+# MCP Day 8 - Demo 2: School Student Records MCP Server
 # Exposes a SQLite school database to any MCP client
 #
 # Setup:     python create_school_db.py    (creates school.db)
