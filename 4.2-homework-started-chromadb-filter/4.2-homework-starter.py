@@ -199,3 +199,12 @@ print_results("Documents that contain 'student' but not 'password'", results)
 print("\n--- EXERCISE 4: Semantic query + metadata filter + text filter ---")
 
 # Write your code here:
+
+results = collection.query(
+    query_texts=["how do I print documents on campus"],
+    where={"category": "printing"},
+    where_document={"$contains": "page"},
+    n_results=5,
+)
+
+print_results("Semantic query results with filters", results, show_distances=True)
