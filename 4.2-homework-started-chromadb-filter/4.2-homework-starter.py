@@ -148,6 +148,18 @@ print("\n--- EXERCISE 2: Combined metadata filters ---")
 
 # Write your code here:
 
+results = collection.get(
+    where={
+        "$and": [
+            {"priority": "high"},
+            {"year": 2025},
+            {"verified": True},
+        ]
+    },
+)
+
+print_results("Documents where priority == 'high' AND year == 2025 AND verified == True", results)
+
 
 # ---------------------------------------------------------------------------
 # EXERCISE 3 — Full text search with where_document
@@ -161,6 +173,17 @@ print("\n--- EXERCISE 2: Combined metadata filters ---")
 print("\n--- EXERCISE 3: Full text search ---")
 
 # Write your code here:
+
+results = collection.get(
+    where_document={
+        "$and": [
+            {"$contains": "student"},
+            {"$not_contains": "password"},
+        ]
+    },
+)
+
+print_results("Documents that contain 'student' but not 'password'", results)
 
 
 # ---------------------------------------------------------------------------
