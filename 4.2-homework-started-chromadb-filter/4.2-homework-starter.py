@@ -131,6 +131,10 @@ print("\n--- EXERCISE 1: Basic metadata filter ---")
 
 # Write your code here:
 
+results = collection.get(
+    where={"category": "vpn"},
+)
+print_results("Documents where category == 'vpn'", results)
 
 # ---------------------------------------------------------------------------
 # EXERCISE 2 — Combining filters with $and and $or
