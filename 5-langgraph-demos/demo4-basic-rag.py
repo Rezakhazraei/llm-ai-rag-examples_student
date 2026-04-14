@@ -102,7 +102,12 @@ vector_store = Chroma.from_texts(
     embedding=embeddings,
 )
 
-retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+retriever = vector_store.as_retriever(search_kwargs={"k": 3}) # This means: The retriever returns top 3 most similar documents
+# Note: Effect of changing 'k' value: If you set k=1, only the single most relevant creature entry will be retrieved and used as context for answering questions. 
+# This may lead to more focused but potentially less comprehensive answers. 
+# If you set k=5, the top 5 most relevant entries will be retrieved, providing a broader context for the LLM to draw from when generating answers. 
+# This can lead to more detailed responses but may also introduce some noise if less relevant entries are included. 
+# Adjusting 'k' allows you to balance between specificity and breadth of information in the LLM's responses.
 
 
 # ─── State ────────────────────────────────────────────────────────────────────
@@ -111,6 +116,7 @@ class State(TypedDict):
     query: str           # user question
     context: list[str]   # retrieved creature entries
     answer: str          # final LLM response
+    sources: list[str]   # (optional) source documents or metadata for citations
 
 
 # ─── LLM ─────────────────────────────────────────────────────────────────────
@@ -125,8 +131,13 @@ def retrieve(state: State) -> dict:
     docs = retriever.invoke(state["query"])
 
     #print([doc.page_content for doc in docs])  # debug print to see retrieved documents
+    # By enabling debug prints, sometimes retrieval does not match the query well, especially
+    # when the query uses different wording or the query is ambiguous.
+    # Key insight: Vector search depends heavily on wording similarity, not true understanding.
 
     return {"context": [doc.page_content for doc in docs]}
+
+    # 'retrieve' reads 'query' and writes 'context' (a list of retrieved catalog JSON entries).
 
 
 def generate(state: State) -> dict:
@@ -146,8 +157,15 @@ def generate(state: State) -> dict:
         )),
     ]
 
+    # With SystemMessage we will have cleaner and more formatted answers,but 
+    # without it we will have more raw LLM behavior, which can be good for learning/debugging.
+
     response = llm.invoke(messages)
     return {"answer": response.content}
+
+# 'generate' reads both 'query' and 'context', then writes 'answer'.
+# So, in short: **'retrieve' touches 'query' (read) + 'context' (write)** and
+# **'generate' touches 'query' + 'context' (read) + 'answer' (write)**.
 
 
 # ─── Graph ────────────────────────────────────────────────────────────────────
